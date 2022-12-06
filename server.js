@@ -1,4 +1,5 @@
 require("dotenv").config();
+const cors = require("cors");
 const express = require("express");
 const passport = require("passport");
 const userRouter = require("./routes/userRoutes");
@@ -11,6 +12,7 @@ connectToDB();
 
 const app = express();
 app.use(express.json());
+app.use(cors());
 
 // Passport middleware
 app.use(passport.initialize());
