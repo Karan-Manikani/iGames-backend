@@ -1,36 +1,27 @@
 require("dotenv").config();
-const cors = require("cors");
 const express = require("express");
-const session = require("express-session");
+const passport = require("passport");
+const userRouter = require("./routes/userRoutes");
+const gameRouter = require("./routes/gameRoutes");
 const connectToDB = require("./database/connectToDB");
+const errorHandler = require("./middleware/errorHandler");
 
+// Connect to MongoDB
 connectToDB();
 
 const app = express();
-
-app.use(
-    cors({
-        origin: "http://localhost:3000",
-        credentials: true,
-    })
-);
-
 app.use(express.json());
-app.set("trust-proxy", 1);
 
-app.use(
-    session({
-        resave: false,
-        saveUninitialized: false,
-        secret: process.env.SESSION_SECRET,
-        cookie: {
-            maxAge: 1000 * 60 * 60,
-            sameSite: "none",
-            secure: true,
-        },
-    })
-);
+// Passport middleware
+app.use(passport.initialize());
+require("./config/passport")(passport);
+
+// Routes
+app.use("/api/users", userRouter);
+app.use("/api/games", gameRouter);
+
+// Error handling middleware
+app.use(errorHandler);
 
 const PORT = process.env.PORT || 8000;
-
 app.listen(PORT, () => console.log(`Server is up on port ${PORT}`));
