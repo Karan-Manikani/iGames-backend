@@ -23,6 +23,7 @@ async function register(req, res, next) {
             statusCode: 201,
             response: newUser,
             token: "Bearer " + token,
+            message: "Your account has been successfully created",
         });
     } catch (error) {
         next(error);
@@ -54,6 +55,7 @@ async function login(req, res, next) {
             statusCode: 200,
             response: user,
             token: "Bearer " + token,
+            message: "Logged in successfully",
         });
     } catch (error) {
         next(error);
@@ -85,6 +87,7 @@ async function addToWishlist(req, res, next) {
             success: true,
             statusCode: 200,
             response: req.user,
+            message: "Game added to wishlist",
         });
     } catch (error) {
         next(error);
@@ -116,6 +119,7 @@ async function removeFromWishlist(req, res, next) {
             success: true,
             statusCode: 200,
             response: req.user,
+            message: "Game removed from wishlist",
         });
     } catch (error) {
         next(error);
@@ -147,6 +151,7 @@ async function addToCart(req, res, next) {
             success: true,
             statusCode: 200,
             response: req.user,
+            message: "Game added to cart",
         });
     } catch (error) {
         next(error);
@@ -178,6 +183,7 @@ async function RemoveFromCart(req, res, next) {
             success: true,
             statusCode: 200,
             response: req.user,
+            message: "Game removed from cart",
         });
     } catch (error) {
         next(error);
@@ -205,7 +211,7 @@ async function getUserProfile(req, res, next) {
 async function updateUserProfile(req, res, next) {
     // Check whether the field being updated is one of username, email or password. If not, we throw an error.
     const updates = Object.keys(req.body);
-    const allowedUpdates = ["username", "email", "password"];
+    const allowedUpdates = ["username", "email"];
     const isValidOperation = updates.every((update) => allowedUpdates.includes(update));
     if (!isValidOperation) {
         return next(new ErrorResponse("Invalid updates", 400));
@@ -222,12 +228,16 @@ async function updateUserProfile(req, res, next) {
             success: true,
             statusCode: 200,
             response: req.user,
+            message: `${updates.join(" and ")} updated successfully`,
         });
     } catch (error) {
         next(error);
     }
 }
 
+// Method: PATCH
+// URL: /api/users/me/password
+// Desc: Updates the user's password.
 async function updateUserPassword(req, res, next) {
     try {
         const passwordsMatch = await req.user.isMatch(req.body.password.currentPassword);
@@ -260,6 +270,7 @@ async function deleteUserProfile(req, res, next) {
             success: true,
             statusCode: 200,
             response: "Deleted successfully",
+            message: "Account deleted successfully",
         });
     } catch (error) {
         next(error);
